@@ -15,6 +15,7 @@ public class MakeMusicClient {
 	private enum MemberType { HOST, PARTICIPANT, UNDECIDED };
 	
 	public static void main(String[] args){
+		
 		// Get my Internet address.
 		InetAddress inetaddr = null;
 		try{
@@ -60,7 +61,7 @@ public class MakeMusicClient {
 			// Make state machine.
 			State state = State.SELECT;
 			MemberType memberType = MemberType.UNDECIDED;
-						
+			
 			String line = null;
 			
 			MakeRoomThread mrt = null;
