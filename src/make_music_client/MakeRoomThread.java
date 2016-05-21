@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /* This thread handle the connection between host and participant 
@@ -18,8 +19,7 @@ public class MakeRoomThread extends Thread{
 	
 	private String hostIP;
 	private ServerSocket room;
-	// 0 means Host, 1 means Participant.
-	private HashMap<Integer, String> memberList;
+	private HashSet<Socket> memberList;
 	private HashMap<String, PrintWriter> outputStreamList;
 	
 	public MakeRoomThread(String hostIP){
@@ -30,20 +30,18 @@ public class MakeRoomThread extends Thread{
 		// Make connection between Host and Participant.
 		try{
 			this.room = new ServerSocket(10002);
-			this.memberList = new HashMap<Integer, String>();
+			this.memberList = new HashSet<Socket>();
 			this.outputStreamList = new HashMap<String, PrintWriter>();
-			System.out.println("Creating Room is Complete.");
+			System.out.println("Creating Room("+room.getInetAddress().getHostAddress()+") is Complete.");
 			
 			System.out.println("Waiting...");
 			while(true){
 				// Make connection if there are empty seat.
 				if(memberList.size() <= maxMemberNumber){
 					Socket user = room.accept();
-					if(user.getInetAddress().getHostAddress() == hostIP)
-						memberList.put(new Integer(0), user.getInetAddress().getHostAddress());
-					else
-						memberList.put(new Integer(1), user.getInetAddress().getHostAddress());
-					MusicThread t = new MusicThread(user, outputStreamList);
+					System.out.println("Participant("+user.getInetAddress().getHostAddress()+") is joined this room.");
+					memberList.add(user);
+					MusicThread t = new MusicThread(user, memberList, outputStreamList);
 					t.start();
 				}
 				// If room is full, sleep 1 second and check whether there are empty seat.
@@ -60,10 +58,12 @@ public class MakeRoomThread extends Thread{
 class MusicThread extends Thread{
 	private Socket user;
 	private BufferedReader br;
+	private HashSet<Socket> memberList;
 	private HashMap<String, PrintWriter> outputStreamList;
 	
-	public MusicThread(Socket user, HashMap<String, PrintWriter> outputStreamList){
+	public MusicThread(Socket user, HashSet<Socket> memberList, HashMap<String, PrintWriter> outputStreamList){
 		this.user = user;
+		this.memberList = memberList;
 		this.outputStreamList = outputStreamList;
 		try{
 			PrintWriter pw = new PrintWriter(
@@ -74,6 +74,12 @@ class MusicThread extends Thread{
 			// Manage all PrintWriter to outputStreamList
 			synchronized(outputStreamList){
 				outputStreamList.put(user.getInetAddress().getHostAddress(), pw);
+			}
+			Collection collection = outputStreamList.keySet();
+			Iterator iter = collection.iterator();
+			while(iter.hasNext()){
+				String address = (String)iter.next();
+				System.out.println(address);
 			}
 		} catch(Exception ex){
 			System.out.println(ex);
@@ -86,8 +92,17 @@ class MusicThread extends Thread{
 			
 			while((line = br.readLine()) != null){
 				// participant가 host에게 보내는 것들에 대한 처리
-				if(line.equals("/quitRoom"))
+				if(line.equals("/closeMe")){
 					break;
+				}
+				else if(line.equals("/closeAll")){
+					Iterator<Socket> iter = memberList.iterator();
+					while(iter.hasNext()){
+						Socket target = iter.next();
+						if(target != null)
+							target.close();
+					}
+				}
 				else{
 					broadcast(line);
 				}

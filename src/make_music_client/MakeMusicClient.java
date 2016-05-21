@@ -82,7 +82,7 @@ public class MakeMusicClient {
 									new InputStreamReader(user.getInputStream()));
 							userpw = new PrintWriter(
 									new OutputStreamWriter(user.getOutputStream()));
-							
+							System.out.println("host join to the room");
 							// SubInputThread handle the message from room(host).
 							userit = new SubInputThread(user, userbr);
 							userit.start();
@@ -137,19 +137,31 @@ public class MakeMusicClient {
 					// Command quitRoom : quit the room.
 					if(line.equals("/quitRoom")){
 						try{
-							if(userbr != null)
-								userbr.close();
-							if(userpw != null)
-								userpw.close();
-							if(user != null)
-								user.close();
+							if(memberType == MemberType.HOST){
+								// Connection close between host(server) and all member in the room(client).
+								pw.println("/closeAll");
+								pw.flush();
+							}
+							else if(memberType == MemberType.PARTICIPANT){
+								pw.println("/closeMe");
+								pw.flush();
+								if(userbr != null)
+									userbr.close();
+								if(userpw != null)
+									userpw.close();
+								if(user != null)
+									user.close();
+							}
 							joinFlag = false;
 						} catch(Exception e){
 							e.printStackTrace();
 						}
 					}
-					userpw.println(line);
-					userpw.flush();
+					// Maybe sound signal.
+					else{
+						userpw.println(line);
+						userpw.flush();
+					}
 				}
 			}
 		} catch(Exception ex){
