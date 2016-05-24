@@ -42,7 +42,9 @@ public class ListPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					System.out.println(rooms.get(roomList.getSelectedIndex()).toString());
-					RoomPanel room = new RoomPanel(rooms.get(roomList.getSelectedIndex()));
+					String roomName = rooms.get(roomList.getSelectedIndex());
+					
+					RoomPanel room = new RoomPanel(roomName.substring(roomName.indexOf(":") + 1));
 					
 					MainFrame.frame.getContentPane().remove(panel);
 					MainFrame.frame.getContentPane().add(room.panel);
