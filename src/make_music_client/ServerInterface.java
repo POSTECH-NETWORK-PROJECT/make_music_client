@@ -18,8 +18,8 @@ public class ServerInterface extends SocketInterface {
       sendFlag = Boolean.FALSE;
    }
    
-   public void sendAddRoomSignalToServer(){
-      this.sendMessageToServer("@addRoom");
+   public void sendAddRoomSignalToServer(String roomName){
+      this.sendMessageToServer("@addRoom "+roomName);
       sendFlag = Boolean.FALSE;
    }
    

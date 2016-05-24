@@ -23,7 +23,7 @@ public class MainPanel {
 				try {
 					manageRoomThread = new ManageRoomThread(new ServerSocket(10001));
 					manageRoomThread.start();
-					MainFrame.server.sendAddRoomSignalToServer();
+					MainFrame.server.sendAddRoomSignalToServer("hi ");
 					MainFrame.state = MainFrame.State.HOST;
 					
 					RoomPanel room = new RoomPanel(InetAddress.getLocalHost().getHostAddress());
