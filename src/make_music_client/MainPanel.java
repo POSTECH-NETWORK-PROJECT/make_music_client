@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MainPanel {
@@ -20,20 +21,28 @@ public class MainPanel {
 		JButton btnHost = new JButton("Create Room");
 		btnHost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					manageRoomThread = new ManageRoomThread(new ServerSocket(10001));
-					manageRoomThread.start();
-					MainFrame.server.sendAddRoomSignalToServer("hi");
-					MainFrame.state = MainFrame.State.HOST;
-					
-					RoomPanel room = new RoomPanel(InetAddress.getLocalHost().getHostAddress());
-					
-					MainFrame.frame.getContentPane().remove(panel);
-					MainFrame.frame.getContentPane().add(room.panel);
-					room.panel.requestFocus();
-					MainFrame.frame.setVisible(true);
-				} catch (Exception e1) {
-					e1.printStackTrace();
+				String roomName = JOptionPane.showInputDialog(null, "방 이름을 입력해주세요");
+				
+				if (roomName == null) {
+					// do nothing
+				} else if (roomName.equals("")) {
+					JOptionPane.showMessageDialog(null, "유효한 입력이 아닙니다");
+				} else {
+					try {
+						manageRoomThread = new ManageRoomThread(new ServerSocket(10001));
+						manageRoomThread.start();
+						MainFrame.server.sendAddRoomSignalToServer(roomName);
+						MainFrame.state = MainFrame.State.HOST;
+						
+						RoomPanel room = new RoomPanel(InetAddress.getLocalHost().getHostAddress());
+						
+						MainFrame.frame.getContentPane().remove(panel);
+						MainFrame.frame.getContentPane().add(room.panel);
+						room.panel.requestFocus();
+						MainFrame.frame.setVisible(true);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
