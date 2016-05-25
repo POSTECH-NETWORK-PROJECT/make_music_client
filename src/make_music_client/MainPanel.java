@@ -37,6 +37,7 @@ public class MainPanel {
 		JButton btnHost = new JButton("Create Room");
 		btnHost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// get user input for the name of a room
 				String roomName = JOptionPane.showInputDialog(null, "방 이름을 입력해주세요");
 				
 				if (roomName == null) {
