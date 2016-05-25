@@ -271,14 +271,14 @@ public class RoomPanel {
 						MainFrame.frame.setVisible(true);
 					
 						JOptionPane.showMessageDialog(null, "Host가 연결을 종료했습니다");
-	            	} else {
-	            		MainPanel main = new MainPanel();
-						MainFrame.frame.getContentPane().remove(panel);
-						MainFrame.frame.getContentPane().add(main.panel);
-						MainFrame.frame.setVisible(true);
 	            	}
 					
 	            	break;
+	            } else if (line.equals("/exit")) {
+	            	MainPanel main = new MainPanel();
+					MainFrame.frame.getContentPane().remove(panel);
+					MainFrame.frame.getContentPane().add(main.panel);
+					MainFrame.frame.setVisible(true);
 	            } else {
 		            String[] info = line.split(":");
 		            
