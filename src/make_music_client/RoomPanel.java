@@ -111,7 +111,7 @@ public class RoomPanel {
 					MainFrame.frame.getContentPane().add(main.panel);
 					MainFrame.frame.setVisible(true);
 				} else {
-					roomInterface.sendExitToRoom();
+					roomInterface.sendMessageToServer("/exit");
 					
 					MainPanel main = new MainPanel();
 					MainFrame.frame.getContentPane().remove(panel);

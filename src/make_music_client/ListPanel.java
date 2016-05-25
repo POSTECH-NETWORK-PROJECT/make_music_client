@@ -76,6 +76,8 @@ public class ListPanel {
 				if (roomList.getSelectedIndex() == -1) return;
 				
 				try {
+					MainFrame.state = MainFrame.State.PARTICIPANT;
+					
 					System.out.println(roomNames.get(roomList.getSelectedIndex()).toString());
 					String roomName = roomNames.get(roomList.getSelectedIndex());
 					
