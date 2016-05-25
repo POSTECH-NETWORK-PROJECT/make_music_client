@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,7 +72,6 @@ class MusicThread extends Thread {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e);
 		} finally {
 			// If member leave, remove that member from memberList and outputStreamList.
 			synchronized (memberList) {
