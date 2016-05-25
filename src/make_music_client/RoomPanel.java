@@ -407,6 +407,7 @@ public class RoomPanel {
 		sequencer.stop();
 	}
 	
+	// initialize key codes to pitches to play
 	private void initKeyMap() {
 		keyMap = new HashMap<Integer, Integer>();
 		keyMap.put(KeyEvent.VK_Z, 12 * 0 + 0); // C4
