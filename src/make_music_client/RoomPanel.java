@@ -195,7 +195,8 @@ public class RoomPanel {
 			int keyCode = e.getKeyCode();
 			
 			if (keyMap.containsKey(keyCode)) {
-				synthChannel.noteOff(60 + keyMap.get(keyCode), 127);
+				roomInterface.sendSoundToRoom("/mute " + Integer.toString(60 + keyMap.get(keyCode)));
+				//synthChannel.noteOff(60 + keyMap.get(keyCode), 127);
 			}
 		}
 	}
@@ -224,6 +225,9 @@ class RoomInputThread extends Thread{
             if (line.indexOf("/notice") == 0) {
             	int start = line.indexOf(" ") + 1;
             	System.out.println(line.substring(start));
+            } else if (line.indexOf("/mute") == 0) {
+            	int start = line.indexOf(" ") + 1;
+            	synth.noteOff(Integer.parseInt(line.substring(start)), 127);
             } else if (line.equals("/quit")) {
             	if (MainFrame.state != MainFrame.State.HOST) {
 	            	MainPanel main = new MainPanel();
