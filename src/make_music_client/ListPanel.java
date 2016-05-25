@@ -7,44 +7,74 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class ListPanel {
 	JPanel panel;
-	DefaultListModel<String> rooms;
+	DefaultListModel<String> rooms, users;
 	ArrayList<String> roomNames;
-	JList<String> roomList;
+	JList<String> roomList, userList;
+	JScrollPane roomScroll, userScroll;
 	
 	public void refresh() throws IOException {
-		String msg;
+		String roomMsg, userMsg;
 		rooms.clear();
 		roomNames.clear();
+		users.clear();
 		
 		MainFrame.server.sendShowRoomListSignalToServer();
-		while ((msg=MainFrame.server.getMessageFromServer()) != null) {
-			if (msg.indexOf("@END") == 0)
+		while ((roomMsg=MainFrame.server.getMessageFromServer()) != null) {
+			if (roomMsg.indexOf("@END") == 0)
 				break;
 			
-			roomNames.add(msg);
-			rooms.addElement(msg.substring(0, msg.indexOf(":")));
+			roomNames.add(roomMsg);
+			rooms.addElement(roomMsg.substring(0, roomMsg.indexOf(":")));
+		}
+		
+		MainFrame.server.sendShowUserListSignalToServer();
+		while ((userMsg=MainFrame.server.getMessageFromServer()) != null) {
+			if (userMsg.indexOf("@END") == 0)
+				break;
+			
+			users.addElement(userMsg);
 		}
 	}
 	
 	public ListPanel() throws IOException {
 		panel = new JPanel();
+		panel.setLayout(null);
+		
 		rooms = new DefaultListModel<String>();
 		roomNames = new ArrayList<String>();
 		
-		panel.setLayout(null);
+		users = new DefaultListModel<String>();
 		
 		refresh();
+		
+		JLabel roomLabel = new JLabel("Room List:");
+		roomLabel.setBounds(25, 25, 400, 15);
+		
 		roomList = new JList<String>(rooms);
-		roomList.setBounds(25, 25, 400, 475);
+		roomScroll = new JScrollPane();
+		roomScroll.setViewportView(roomList);
+		roomList.setBounds(25, 40, 400, 275);
+		
+		JLabel userLabel = new JLabel("User List:");
+		userLabel.setBounds(25, 335, 400, 15);
+		
+		userList = new JList<String>(users);
+		userScroll = new JScrollPane();
+		userScroll.setViewportView(userList);
+		userList.setBounds(25, 350, 400, 125);
 		
 		JButton btnJoin = new JButton("Join Room");
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (roomList.getSelectedIndex() == -1) return;
+				
 				try {
 					System.out.println(roomNames.get(roomList.getSelectedIndex()).toString());
 					String roomName = roomNames.get(roomList.getSelectedIndex());
@@ -85,9 +115,12 @@ public class ListPanel {
 		});
 		btnBack.setBounds(305, 500, 120, 50);
 		
+		panel.add(roomLabel);
+		panel.add(userLabel);
 		panel.add(btnJoin);
 		panel.add(btnRef);
 		panel.add(btnBack);
 		panel.add(roomList);
+		panel.add(userList);
 	}
 }
