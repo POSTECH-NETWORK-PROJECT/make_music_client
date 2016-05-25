@@ -43,18 +43,17 @@ public class RoomPanel {
 	private	RoomInputThread mainInputThread;
 	
 	public RoomPanel(String address) {
+		MainFrame.frame.setSize(1000, 600);
+		
 		panel = new JPanel();
 		panel.setLayout(null);
 		
 		JLabel memberLabel = new JLabel("Members:");
-		memberLabel.setBounds(25, 25, 400, 15);
 		
 		members = new DefaultListModel<String>();
 		memberList = new JList<String>(members);
-		memberList.setBounds(25, 40, 400, 75);
 		
 		JLabel noticeLabel = new JLabel("Announcement:");
-		noticeLabel.setBounds(25, 135, 400, 15);
 		
 		noticeScroll = new JScrollPane();
 		notices = new DefaultListModel<String>();
@@ -94,7 +93,6 @@ public class RoomPanel {
 				panel.requestFocus();
 			}
 		});
-		btnTest.setBounds(25, 500, 180, 50);
 		
 		JButton btnBack = new JButton("BACK");
 		btnBack.addActionListener(new ActionListener() {
@@ -117,7 +115,13 @@ public class RoomPanel {
 				}
 			}
 		});
+		
+		memberLabel.setBounds(25, 25, 400, 15);
+		memberList.setBounds(25, 40, 400, 75);
+		btnTest.setBounds(25, 500, 180, 50);
 		btnBack.setBounds(245, 500, 180, 50);
+		noticeLabel.setBounds(25, 135, 400, 15);
+		noticeScroll.setBounds(25, 150, 450, 230);
 		
 		initKeyMap();
 		panel.addKeyListener(new CustomKeyListener());

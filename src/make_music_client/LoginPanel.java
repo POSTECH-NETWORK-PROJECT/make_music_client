@@ -16,9 +16,8 @@ public class LoginPanel {
 		panel.setLayout(null);
 		
 		JLabel label = new JLabel("사용할 ID를 입력해주세요");
-		label.setBounds(150, 250, 150, 15);
+		
 		JTextField input = new JTextField();
-		input.setBounds(150, 295, 150, 18);
 		
 		JButton btnLogin = new JButton("LOGIN");
 		btnLogin.addActionListener(new ActionListener() {
@@ -40,7 +39,9 @@ public class LoginPanel {
 			}
 		});
 		
-		btnLogin.setBounds(185, 320, 80, 30);
+		label.setBounds(70, 20, 150, 15);
+		input.setBounds(20, 65, 150, 18);
+		btnLogin.setBounds(190, 59, 80, 30);
 		
 		panel.add(label);
 		panel.add(input);
