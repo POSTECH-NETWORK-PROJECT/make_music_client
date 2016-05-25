@@ -13,24 +13,31 @@ import java.util.Iterator;
 class MusicThread extends Thread{
    private Socket sock;
    private String id;
+   private String ipAddress;
    private BufferedReader br;
+   private HashMap<String, String> memberList;
    private HashMap<String, PrintWriter> hm;
    private boolean initFlag = false;
    
-   public MusicThread(Socket sock, HashMap<String, PrintWriter> hm) throws IOException{
+   public MusicThread(Socket sock, HashMap<String, PrintWriter> hm, HashMap<String, String> memberList) throws IOException{
       this.sock = sock;
       this.hm = hm;
+      this.memberList = memberList;
       PrintWriter pw = new PrintWriter(
             new OutputStreamWriter(sock.getOutputStream()));
       br = new BufferedReader(
             new InputStreamReader(sock.getInputStream()));
       id = br.readLine();
-         
+      ipAddress = sock.getInetAddress().getHostAddress();
+      
+      synchronized(this.memberList){
+    	  this.memberList.put(ipAddress, id);
+      }
       broadcast("/notice "+id+"님이 접속했습니다.");
       System.out.println("접속한 사용자의 아이디는 "+id+"입니다.");
          
       synchronized(hm){
-         hm.put(this.id, pw);
+         hm.put(ipAddress, pw);
       }
       initFlag = true;
    }
@@ -46,15 +53,19 @@ class MusicThread extends Thread{
             else if(line.indexOf("/sound") == 0){
                int start = line.indexOf(" ")+1;
                broadcast(line.substring(start));
-            } else if (line.equals("/quit")) {
+            }
+            else if (line.equals("/quit")) {
             	broadcast("/quit");
             }
          }
       } catch(Exception e){
          System.out.println(e);
       } finally{
+    	 synchronized(memberList){
+    		 memberList.remove(ipAddress);
+    	 }
          synchronized(hm){
-            hm.remove(id);
+            hm.remove(ipAddress);
          }
          broadcast("/notice "+id+" 님이 접속 종료했습니다.");
          try{
@@ -65,21 +76,6 @@ class MusicThread extends Thread{
       }
    }
    
-   public void sendmsg(String msg){
-      int start = msg.indexOf(" ")+1;
-      int end = msg.indexOf(" ", start);
-      
-      if(end != -1){
-         String to = msg.substring(start, end);
-         String msg2 = msg.substring(end+1);
-         Object obj = hm.get(to);
-         if(obj != null){
-            PrintWriter pw = (PrintWriter)obj;
-            pw.println(id+"님이 다음의 귓속말을 보냈습니다. :"+msg2);
-            pw.flush();
-         }
-      }
-   }
    public void broadcast(String msg){
       synchronized(hm){
          Collection collection = hm.values();
