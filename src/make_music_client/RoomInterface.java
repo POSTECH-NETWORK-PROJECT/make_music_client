@@ -14,6 +14,10 @@ public class RoomInterface extends SocketInterface {
       this.sendMessageToServer("/sound "+sound);
    }
    
+   public void sendShowMemberListToRoom(){
+	   this.sendMessageToServer("/showMemberList");
+   }
+   
    public void sendExitToRoom(){
       this.sendMessageToServer("/exit");
    }
