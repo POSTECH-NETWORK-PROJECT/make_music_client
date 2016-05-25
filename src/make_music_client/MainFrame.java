@@ -18,7 +18,7 @@ public class MainFrame extends JFrame{
 	
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		sendFlag = new Boolean(true);
-		server = new ServerInterface("141.223.206.205", 10002, sendFlag);
+		server = new ServerInterface("141.223.204.46", 10002, sendFlag);
 		
 		frame = new MainFrame();
 	}

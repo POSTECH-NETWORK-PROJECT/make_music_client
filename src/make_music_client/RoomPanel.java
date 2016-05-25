@@ -60,7 +60,7 @@ public class RoomPanel {
 		notices = new DefaultListModel<String>();
 		noticeList = new JList<String>(notices);
 		noticeScroll.setViewportView(noticeList);
-		noticeScroll.setBounds(25, 150, 450, 230);
+		noticeScroll.setBounds(25, 150, 400, 230);
 		
 		try {
 			sequencer = MidiSystem.getSequencer();
@@ -77,7 +77,6 @@ public class RoomPanel {
 			mainInputThread = new RoomInputThread(roomInterface, synthChannel, panel);
 			mainInputThread.start();
 			roomInterface.sendMessageToServer(MainFrame.id);
-			mainInputThread.sock.sendShowMemberListToRoom();
 		} catch (MidiUnavailableException e) {
 			sequencer = null;
 			return;

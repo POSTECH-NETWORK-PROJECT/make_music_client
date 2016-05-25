@@ -56,7 +56,7 @@ class MusicThread extends Thread {
 					Iterator<String> it = memberList.values().iterator();
 					String ids = it.next();
 					while(it.hasNext())
-						ids.concat(":"+it.next());
+						ids = ids.concat(":"+it.next());
 					outputStream.println("/member "+ids);
 					outputStream.flush();
 				} else if (line.equals("/quit")) {
