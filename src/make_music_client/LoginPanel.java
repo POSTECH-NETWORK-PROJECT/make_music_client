@@ -2,7 +2,6 @@ package make_music_client;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -40,6 +39,7 @@ public class LoginPanel {
 				}
 			}
 		});
+		
 		btnLogin.setBounds(185, 320, 80, 30);
 		
 		panel.add(label);

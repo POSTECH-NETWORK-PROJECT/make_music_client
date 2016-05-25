@@ -28,6 +28,11 @@ public class ServerInterface extends SocketInterface {
       sendFlag = Boolean.FALSE;
    }
    
+   public void sendShowUserListSignalToServer(){
+	      this.sendMessageToServer("@showUserList");
+	      sendFlag = Boolean.FALSE;
+	   }
+   
    public void sendShowRoomListSignalToServer(){
       this.sendMessageToServer("@showRoomList");
       sendFlag = Boolean.FALSE;
