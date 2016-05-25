@@ -511,8 +511,6 @@ public class RoomPanel {
 	            	}
 					
 	            	break;
-	            } else if (line.equals("/exit")) {
-	            	
 	            } else {
 		            String[] info = line.split(":");
 		            
