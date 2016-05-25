@@ -106,9 +106,17 @@ public class RoomPanel {
 						e1.printStackTrace();
 					}
 					
-					
+					MainPanel main = new MainPanel();
+					MainFrame.frame.getContentPane().remove(panel);
+					MainFrame.frame.getContentPane().add(main.panel);
+					MainFrame.frame.setVisible(true);
 				} else {
 					roomInterface.sendExitToRoom();
+					
+					MainPanel main = new MainPanel();
+					MainFrame.frame.getContentPane().remove(panel);
+					MainFrame.frame.getContentPane().add(main.panel);
+					MainFrame.frame.setVisible(true);
 				}
 			}
 		});
@@ -275,10 +283,7 @@ public class RoomPanel {
 					
 	            	break;
 	            } else if (line.equals("/exit")) {
-	            	MainPanel main = new MainPanel();
-					MainFrame.frame.getContentPane().remove(panel);
-					MainFrame.frame.getContentPane().add(main.panel);
-					MainFrame.frame.setVisible(true);
+	            	
 	            } else {
 		            String[] info = line.split(":");
 		            
