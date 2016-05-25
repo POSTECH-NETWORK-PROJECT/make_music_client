@@ -1,6 +1,5 @@
 package make_music_client;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,16 +12,16 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 public class MainPanel {
 	JPanel panel;
 	public static ManageRoomThread manageRoomThread;
-	private ImageIcon logo;
+	private ImageIcon logo; // main logo
 	
 	public MainPanel() {
 		MainFrame.frame.setSize(450, 700);
 		
+		// create instances for variables
 		panel = new JPanel();
 		panel.setLayout(null);
 		
@@ -34,6 +33,7 @@ public class MainPanel {
 		JLabel mainlogo = new JLabel();
 		mainlogo.setIcon(logo);;
 		
+		// create room button for hosting a room
 		JButton btnHost = new JButton("Create Room");
 		btnHost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -42,19 +42,21 @@ public class MainPanel {
 				if (roomName == null) {
 					// do nothing
 				} else if (roomName.equals("")) {
-					JOptionPane.showMessageDialog(null, "유효한 입력이 아닙니다");
+					JOptionPane.showMessageDialog(null, "유효한 입력이 아닙니다"); // when null string comes
 				} else {
 					try {
+						// Making room
 						manageRoomThread = new ManageRoomThread(new ServerSocket(10001));
 						manageRoomThread.start();
 						MainFrame.server.sendAddRoomSignalToServer(roomName);
 						MainFrame.state = MainFrame.State.HOST;
 						
+						// panel switching
 						RoomPanel room = new RoomPanel(InetAddress.getLocalHost().getHostAddress());
 						
 						MainFrame.frame.getContentPane().remove(panel);
 						MainFrame.frame.getContentPane().add(room.panel);
-						room.panel.requestFocus();
+						room.panel.requestFocus(); // give focus to keyboard
 						MainFrame.frame.setVisible(true);
 					} catch (Exception e1) {
 						e1.printStackTrace();
@@ -63,20 +65,13 @@ public class MainPanel {
 			}
 		});
 		
+		// join room button for switch into list panel
 		JButton btnRoom = new JButton("Join Room");
 		btnRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*String id = JOptionPane.showInputDialog(null, "아이디를 입력해주세요");
-				if (id == null) {
-					return;
-				} else if (id.equals("")) {
-					JOptionPane.showMessageDialog(null, "유효한 아이디를 입력해야 합니다");
-					return;
-				} */
-				
-				ListPanel list;
+				// panel switching
 				try {
-					list = new ListPanel();
+					ListPanel list = new ListPanel();
 					MainFrame.frame.getContentPane().remove(panel);
 					MainFrame.frame.getContentPane().add(list.panel);
 					MainFrame.frame.setVisible(true);
@@ -87,6 +82,7 @@ public class MainPanel {
 			}
 		});
 		
+		// Exit button for end program
 		JButton btnExit = new JButton("EXIT");
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
