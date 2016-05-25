@@ -24,21 +24,22 @@ class MusicThread extends Thread {
 		this.sock = sock;
 		this.outputStreamList = outputStreamList;
 		this.memberList = memberList;
-		this.outputStream = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
-		this.inputStream = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+		outputStream = new PrintWriter(new OutputStreamWriter(sock.getOutputStream()));
+		inputStream = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 		id = inputStream.readLine();
 		ipAddress = sock.getInetAddress().getHostAddress();
-
+		
+		// Synchronized memberList and outputStreamList
 		synchronized (this.memberList) {
 			this.memberList.put(ipAddress, id);
 		}
 		synchronized (outputStreamList) {
 			outputStreamList.put(ipAddress, outputStream);
 		}
+		
+		// Broadcast so that all client in that room refresh list of member.
 		broadcast("/notice " + id + "님이 접속했습니다.");
 		System.out.println("접속한 사용자의 아이디는 " + id + "입니다.");
-
-		
 	}
 
 	public void run() {
@@ -46,26 +47,33 @@ class MusicThread extends Thread {
 			String line = null;
 
 			while ((line = inputStream.readLine()) != null) {
-				System.out.println(line);
+				System.out.println(ipAddress + "가 Room에 보낸 명령어: " + line);
+				// /exit make thread end.
 				if (line.equals("/exit"))
 					break;
+				// /sound broadcast to member so that all member hear the sound.
 				else if (line.indexOf("/sound") == 0) {
 					int start = line.indexOf(" ") + 1;
 					broadcast(line.substring(start));
-				} else if (line.equals("/showMemberList")) {
+				} 
+				// /showMemberList send the list of member.
+				else if (line.equals("/showMemberList")) {
 					Iterator<String> it = memberList.values().iterator();
 					String ids = it.next();
 					while(it.hasNext())
 						ids = ids.concat(":"+it.next());
 					outputStream.println("/member "+ids);
 					outputStream.flush();
-				} else if (line.equals("/quit")) {
+				} 
+				// /quit send all client /quit so that all client quit that room.
+				else if (line.equals("/quit")) {
 					broadcast("/quit");
 				}
 			}
 		} catch (Exception e) {
 			System.out.println(e);
 		} finally {
+			// If member leave, remove that member from memberList and outputStreamList.
 			synchronized (memberList) {
 				memberList.remove(ipAddress);
 			}
@@ -80,7 +88,8 @@ class MusicThread extends Thread {
 			}
 		}
 	}
-
+	
+	// Broadcast send message to all clients.
 	public void broadcast(String msg) {
 		synchronized (outputStreamList) {
 			Collection collection = outputStreamList.values();
