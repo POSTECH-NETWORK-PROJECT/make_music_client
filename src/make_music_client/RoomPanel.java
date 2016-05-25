@@ -123,7 +123,7 @@ public class RoomPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (MainFrame.state == MainFrame.State.HOST) {
 					try {
-						roomInterface.sendMessageToServer("/quit");
+						roomInterface.sendQuitToRoom();
 						MainPanel.manageRoomThread.getRoom().close();
 						MainFrame.server.sendRemoveRoomSignalToServer();
 					} catch (Exception e1) {
@@ -135,7 +135,7 @@ public class RoomPanel {
 					MainFrame.frame.getContentPane().add(main.panel);
 					MainFrame.frame.setVisible(true);
 				} else {
-					roomInterface.sendMessageToServer("/exit");
+					roomInterface.sendExitToRoom();
 					
 					MainPanel main = new MainPanel();
 					MainFrame.frame.getContentPane().remove(panel);
