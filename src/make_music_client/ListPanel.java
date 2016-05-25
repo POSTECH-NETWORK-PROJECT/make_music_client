@@ -60,7 +60,7 @@ public class ListPanel {
 		roomList = new JList<String>(rooms);
 		roomScroll = new JScrollPane();
 		roomScroll.setViewportView(roomList);
-		roomList.setBounds(25, 40, 400, 275);
+		roomScroll.setBounds(25, 40, 400, 275);
 		
 		JLabel userLabel = new JLabel("User List:");
 		userLabel.setBounds(25, 335, 400, 15);
@@ -68,7 +68,7 @@ public class ListPanel {
 		userList = new JList<String>(users);
 		userScroll = new JScrollPane();
 		userScroll.setViewportView(userList);
-		userList.setBounds(25, 350, 400, 125);
+		userScroll.setBounds(25, 350, 400, 125);
 		
 		JButton btnJoin = new JButton("Join Room");
 		btnJoin.addActionListener(new ActionListener() {
@@ -120,7 +120,7 @@ public class ListPanel {
 		panel.add(btnJoin);
 		panel.add(btnRef);
 		panel.add(btnBack);
-		panel.add(roomList);
-		panel.add(userList);
+		panel.add(roomScroll);
+		panel.add(userScroll);
 	}
 }

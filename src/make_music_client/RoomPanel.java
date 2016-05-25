@@ -1,12 +1,10 @@
 package make_music_client;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,15 +16,21 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Synthesizer;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class RoomPanel {
 	final private int SYNTH_NOTE_VELOCITY = 120;
 	
 	JPanel panel;
+	JScrollPane noticeScroll;
+	DefaultListModel<String> members, notices;
+	JList<String> memberList, noticeList;
 	
 	private Sequencer sequencer;
 	private Synthesizer synth;
@@ -40,6 +44,23 @@ public class RoomPanel {
 	
 	public RoomPanel(String address) {
 		panel = new JPanel();
+		panel.setLayout(null);
+		
+		JLabel memberLabel = new JLabel("Members:");
+		memberLabel.setBounds(25, 25, 400, 15);
+		
+		members = new DefaultListModel<String>();
+		memberList = new JList<String>(members);
+		memberList.setBounds(25, 40, 400, 75);
+		
+		JLabel noticeLabel = new JLabel("Announcement:");
+		noticeLabel.setBounds(25, 135, 400, 15);
+		
+		noticeScroll = new JScrollPane();
+		notices = new DefaultListModel<String>();
+		noticeList = new JList<String>(notices);
+		noticeScroll.setViewportView(noticeList);
+		noticeScroll.setBounds(25, 150, 400, 230);
 		
 		try {
 			sequencer = MidiSystem.getSequencer();
@@ -73,6 +94,7 @@ public class RoomPanel {
 				panel.requestFocus();
 			}
 		});
+		btnTest.setBounds(25, 500, 180, 50);
 		
 		JButton btnBack = new JButton("BACK");
 		btnBack.addActionListener(new ActionListener() {
@@ -95,12 +117,14 @@ public class RoomPanel {
 				}
 			}
 		});
+		btnBack.setBounds(245, 500, 180, 50);
 		
 		initKeyMap();
 		panel.addKeyListener(new CustomKeyListener());
-		panel.add(btnTest, BorderLayout.NORTH);
-		panel.add(btnBack, BorderLayout.SOUTH);
-		panel.add(new JLabel("Press Z"));
+		panel.add(btnTest);
+		panel.add(btnBack);
+		panel.add(memberList);
+		panel.add(noticeScroll);
 	}
 	
 	private void changeInstrument(int code) {
@@ -200,70 +224,78 @@ public class RoomPanel {
 			}
 		}
 	}
+	
+	/* RoomInputThread
+	 * Print the message received by server. */
+	class RoomInputThread extends Thread{
+	   private RoomInterface sock = null;
+	   private MidiChannel synth = null;
+	   private JPanel panel = null;
+	   private int instru = 0;
+	   
+	   public RoomInputThread(RoomInterface sock, MidiChannel synth, JPanel panel){
+	      this.sock = sock;
+	      this.synth = synth;
+	      this.panel = panel;
+	   }
+	   
+	   public void run(){
+	      try{
+	         String line = null;
+	         while((line=sock.getMessageFromServer()) != null){
+	            // line is message from server.
+	            System.out.println(line);
+	            if (line.indexOf("/notice") == 0) {
+	            	members.clear();
+	            	sock.sendShowMemberListToRoom();
+	            	int start = line.indexOf(" ") + 1;
+	            	System.out.println(line.substring(start));
+	            	notices.addElement(line.substring(start));
+	            } else if (line.indexOf("/mute") == 0) {
+	            	int start = line.indexOf(" ") + 1;
+	            	synth.noteOff(Integer.parseInt(line.substring(start)), 127);
+	            } else if (line.indexOf("/member") == 0) {
+	            	int start = line.indexOf(" ") + 1;
+	            	members.addElement(line.substring(start));
+	            } else if (line.equals("/quit")) {
+	            	if (MainFrame.state != MainFrame.State.HOST) {
+		            	MainPanel main = new MainPanel();
+						MainFrame.frame.getContentPane().remove(panel);
+						MainFrame.frame.getContentPane().add(main.panel);
+						MainFrame.frame.setVisible(true);
+					
+						JOptionPane.showMessageDialog(null, "Host가 연결을 종료했습니다");
+	            	}
+					
+	            	break;
+	            } else {
+		            String[] info = line.split(":");
+		            
+		            changeChannel(Integer.parseInt(info[1]));
+		            playNote(Integer.parseInt(info[0]));
+	            }
+	         }
+	      } catch(Exception ex){
+	    	  ex.printStackTrace();
+	      } finally{
+	         try{
+	            if(sock != null)
+	               sock.close();
+	         } catch(Exception ex){
+	        	 ex.printStackTrace();
+	         }
+	      }
+	   }
+	   
+	   public void changeChannel(int program) {
+		   instru = program;
+		   synth.programChange(instru);
+	   }
+	   
+	   public void playNote(int pitch) {
+		   synth.noteOn(pitch, 120);
+	   }
+	}
+
 }
 
-/* RoomInputThread
- * Print the message received by server. */
-class RoomInputThread extends Thread{
-   private RoomInterface sock = null;
-   private MidiChannel synth = null;
-   private JPanel panel = null;
-   private int instru = 0;
-   
-   public RoomInputThread(RoomInterface sock, MidiChannel synth, JPanel panel){
-      this.sock = sock;
-      this.synth = synth;
-      this.panel = panel;
-   }
-   
-   public void run(){
-      try{
-         String line = null;
-         while((line=sock.getMessageFromServer()) != null){
-            // line is message from server.
-            System.out.println(line);
-            if (line.indexOf("/notice") == 0) {
-            	int start = line.indexOf(" ") + 1;
-            	System.out.println(line.substring(start));
-            } else if (line.indexOf("/mute") == 0) {
-            	int start = line.indexOf(" ") + 1;
-            	synth.noteOff(Integer.parseInt(line.substring(start)), 127);
-            } else if (line.equals("/quit")) {
-            	if (MainFrame.state != MainFrame.State.HOST) {
-	            	MainPanel main = new MainPanel();
-					MainFrame.frame.getContentPane().remove(panel);
-					MainFrame.frame.getContentPane().add(main.panel);
-					MainFrame.frame.setVisible(true);
-				
-					JOptionPane.showMessageDialog(null, "Host가 연결을 종료했습니다");
-            	}
-				
-            	break;
-            } else {
-	            String[] info = line.split(":");
-	            
-	            changeChannel(Integer.parseInt(info[1]));
-	            playNote(Integer.parseInt(info[0]));
-            }
-         }
-      } catch(Exception ex){
-    	  ex.printStackTrace();
-      } finally{
-         try{
-            if(sock != null)
-               sock.close();
-         } catch(Exception ex){
-        	 ex.printStackTrace();
-         }
-      }
-   }
-   
-   public void changeChannel(int program) {
-	   instru = program;
-	   synth.programChange(instru);
-   }
-   
-   public void playNote(int pitch) {
-	   synth.noteOn(pitch, 120);
-   }
-}
