@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 public class ManageRoomThread extends Thread{
    private ServerSocket room;
+   private HashMap<String, String> memberList;
    private HashMap<String, PrintWriter> hm;
    
    public ManageRoomThread(ServerSocket room){
@@ -19,10 +20,11 @@ public class ManageRoomThread extends Thread{
    public void run(){
       try{
          System.out.println("[ROOM SERVER] 접속을 기다립니다. IP: "+InetAddress.getLocalHost().getHostAddress());
+         memberList = new HashMap<String, String>();
          hm = new HashMap<String, PrintWriter>();
          while(!Thread.currentThread().isInterrupted()){
             Socket sock = room.accept();
-            MusicThread t = new MusicThread(sock,hm);
+            MusicThread t = new MusicThread(sock, hm, memberList);
             t.start();
          }
       } catch(SocketException e2){

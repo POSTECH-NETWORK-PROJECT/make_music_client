@@ -55,7 +55,7 @@ public class RoomPanel {
 			roomInterface = new RoomInterface(address, 10001);
 			mainInputThread = new RoomInputThread(roomInterface, synthChannel, panel);
 			mainInputThread.start();
-			roomInterface.sendMessageToServer(InetAddress.getLocalHost().getHostAddress());
+			roomInterface.sendMessageToServer(MainFrame.id);
 		} catch (MidiUnavailableException e) {
 			sequencer = null;
 			return;
