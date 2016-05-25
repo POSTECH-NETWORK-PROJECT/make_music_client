@@ -53,11 +53,11 @@ class MusicThread extends Thread {
 					broadcast(line.substring(start));
 				} else if (line.equals("/showMemberList")) {
 					Iterator<String> it = memberList.values().iterator();
-					while(it.hasNext()){
-						String id = it.next();
-						outputStream.println("/member "+id);
-						outputStream.flush();
-					}
+					String ids = it.next();
+					while(it.hasNext())
+						ids.concat(":"+it.next());
+					outputStream.println("/member "+ids);
+					outputStream.flush();
 				} else if (line.equals("/quit")) {
 					broadcast("/quit");
 				}
