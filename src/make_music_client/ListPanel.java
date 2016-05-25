@@ -45,6 +45,8 @@ public class ListPanel {
 		JButton btnJoin = new JButton("Join Room");
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (roomList.getSelectedIndex() == -1) return;
+				
 				try {
 					System.out.println(roomNames.get(roomList.getSelectedIndex()).toString());
 					String roomName = roomNames.get(roomList.getSelectedIndex());
