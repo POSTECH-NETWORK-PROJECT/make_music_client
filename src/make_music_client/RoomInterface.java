@@ -7,9 +7,9 @@ public class RoomInterface extends SocketInterface {
 
    public RoomInterface(String address, int port) throws UnknownHostException, IOException {
       super(address, port);
-      // TODO Auto-generated constructor stub
    }
    
+   // Construct interfaces between Room and Client.
    public void sendSoundToRoom(String sound){
       this.sendMessageToServer("/sound "+sound);
    }
@@ -22,4 +22,7 @@ public class RoomInterface extends SocketInterface {
       this.sendMessageToServer("/exit");
    }
    
+   public void sendQuitToRoom(){
+	   this.sendMessageToServer("/quit");
+   }
 }

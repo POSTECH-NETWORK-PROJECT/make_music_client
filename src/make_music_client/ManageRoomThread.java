@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class ManageRoomThread extends Thread{
    private ServerSocket room;
    private HashMap<String, String> memberList;
-   private HashMap<String, PrintWriter> hm;
+   private HashMap<String, PrintWriter> outputStreamList;
    
    public ManageRoomThread(ServerSocket room){
       this.room = room;
@@ -20,11 +20,13 @@ public class ManageRoomThread extends Thread{
    public void run(){
       try{
          System.out.println("[ROOM SERVER] 접속을 기다립니다. IP: "+InetAddress.getLocalHost().getHostAddress());
+         // memberList and outputStreamList manage member and each outputStream.
          memberList = new HashMap<String, String>();
-         hm = new HashMap<String, PrintWriter>();
+         outputStreamList = new HashMap<String, PrintWriter>();
          while(!Thread.currentThread().isInterrupted()){
             Socket sock = room.accept();
-            MusicThread t = new MusicThread(sock, hm, memberList);
+            // Multithread logic
+            MusicThread t = new MusicThread(sock, outputStreamList, memberList);
             t.start();
          }
       } catch(SocketException e2){
@@ -32,7 +34,7 @@ public class ManageRoomThread extends Thread{
       } catch(IOException e1){
          e1.printStackTrace();
       } finally{
-         System.out.println("곧 끝납니다 ^^");
+         System.out.println("방장이 나갔습니다. 방이 폭파됩니다.");
          try{
             if(room != null)
                room.close();
