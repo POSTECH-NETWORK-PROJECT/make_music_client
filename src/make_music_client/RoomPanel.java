@@ -60,7 +60,7 @@ public class RoomPanel {
 		notices = new DefaultListModel<String>();
 		noticeList = new JList<String>(notices);
 		noticeScroll.setViewportView(noticeList);
-		noticeScroll.setBounds(25, 150, 400, 230);
+		noticeScroll.setBounds(25, 150, 450, 230);
 		
 		try {
 			sequencer = MidiSystem.getSequencer();
@@ -121,7 +121,9 @@ public class RoomPanel {
 		
 		initKeyMap();
 		panel.addKeyListener(new CustomKeyListener());
+		panel.add(memberLabel);
 		panel.add(btnTest);
+		panel.add(noticeLabel);
 		panel.add(btnBack);
 		panel.add(memberList);
 		panel.add(noticeScroll);
@@ -256,7 +258,10 @@ public class RoomPanel {
 	            	synth.noteOff(Integer.parseInt(line.substring(start)), 127);
 	            } else if (line.indexOf("/member") == 0) {
 	            	int start = line.indexOf(" ") + 1;
-	            	members.addElement(line.substring(start));
+	            	String[] arr = line.substring(start).split(":");
+	            	
+	            	for (int i = 0; i < arr.length; i++)
+	            		members.addElement(arr[i]);
 	            } else if (line.equals("/quit")) {
 	            	if (MainFrame.state != MainFrame.State.HOST) {
 		            	MainPanel main = new MainPanel();
