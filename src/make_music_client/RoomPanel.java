@@ -77,6 +77,7 @@ public class RoomPanel {
 			mainInputThread = new RoomInputThread(roomInterface, synthChannel, panel);
 			mainInputThread.start();
 			roomInterface.sendMessageToServer(MainFrame.id);
+			mainInputThread.sock.sendShowMemberListToRoom();
 		} catch (MidiUnavailableException e) {
 			sequencer = null;
 			return;
