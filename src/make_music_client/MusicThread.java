@@ -32,12 +32,13 @@ class MusicThread extends Thread {
 		synchronized (this.memberList) {
 			this.memberList.put(ipAddress, id);
 		}
-		broadcast("/notice " + id + "님이 접속했습니다.");
-		System.out.println("접속한 사용자의 아이디는 " + id + "입니다.");
-
 		synchronized (outputStreamList) {
 			outputStreamList.put(ipAddress, outputStream);
 		}
+		broadcast("/notice " + id + "님이 접속했습니다.");
+		System.out.println("접속한 사용자의 아이디는 " + id + "입니다.");
+
+		
 	}
 
 	public void run() {
